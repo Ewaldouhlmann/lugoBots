@@ -1,5 +1,11 @@
 import lugo4py
 import lugo4py.mapper as mapper
+<<<<<<< HEAD
+=======
+import math
+import math
+import math
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9
 
 # MAPPER_COLS and MAPPER_ROWS define the number of regions on the field.
 # great values leads to more precision
@@ -21,6 +27,7 @@ MAPPER_ROWS = 6
 #     10: {'Col': 4, 'Row': 3},
 #     11: {'Col': 4, 'Row': 2},
 # }
+<<<<<<< HEAD
 class Point:
     def __init__(self, x, y):
         self.x = x
@@ -28,6 +35,8 @@ class Point:
 
     def __str__(self):
         return f"Point(x={self.x}, y={self.y})"
+=======
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9
 
 def get_my_expected_position(inspector: lugo4py.GameSnapshotInspector, my_mapper: mapper.Mapper, number: int):
     mapper_cols = MAPPER_COLS
@@ -85,7 +94,54 @@ def get_my_expected_position(inspector: lugo4py.GameSnapshotInspector, my_mapper
                                            player_tactic_positions[team_state][number]['Row'])
     return expected_region.get_center()
 
+<<<<<<< HEAD
 
 def getDistance(x1,y1, x2, y2):
     distance = (x1-x2)**2 + (y1-y2)**2
     return distance
+=======
+def get_closestenemy_dist(inspector: lugo4py.GameSnapshotInspector, my_mapper: mapper.Mapper):
+    player_position = inspector.get_ball().position
+    oponentes = inspector.get_opponent_players()
+
+    nearesopponent = math.inf
+    minDistance = math.inf
+    for opponent in oponentes:
+        current_distance = getDistance(player_position.x, player_position.y, opponent.position.x, opponent.position.y)
+        if (current_distance < minDistance):
+            minDistance = current_distance
+            nearesopponent = opponent
+
+    return minDistance, nearesopponent
+
+
+def getDistance(x1,y1, x2, y2):
+    distance = (x1-x2)**2 + (y1-y2)**2 
+    return distance
+
+def get_closestally_position(inspector: lugo4py.GameSnapshotInspector, my_mapper: mapper.Mapper):
+    player_list = inspector.get_my_team_players()
+    player_position = inspector.get_ball().position
+    holder_number = inspector.get_ball().holder.number
+
+    closest_ally = {}
+    for ally in player_list:
+        if ally.number != holder_number and (ally.number != 1):
+            distance = getDistance(ally.position.x, ally.position.y, player_position.x, player_position.y)
+            if distance not in closest_ally:
+                closest_ally[distance] = [ally]
+            else:
+                closest_ally[distance].append(ally)
+
+    closest_ally = dict(sorted(closest_ally.items(), key=lambda x: x[0]))
+    
+    return closest_ally
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"Point(x={self.x}, y={self.y})"
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9

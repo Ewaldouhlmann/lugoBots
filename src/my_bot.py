@@ -3,16 +3,24 @@ from abc import ABC
 from typing import List
 
 import lugo4py
+<<<<<<< HEAD
 from settings import get_my_expected_position,getDistance, Point
 import math
 from random import randint
 from lugo4py import mapper
+=======
+from settings import get_my_expected_position, get_closestenemy_dist, get_closestally_position, Point, getDistance
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9
 
 
 class MyBot(lugo4py.Bot, ABC):
     def on_disputing(self, inspector: lugo4py.GameSnapshotInspector) -> List[lugo4py.Order]:
         try:
+<<<<<<< HEAD
 
+=======
+            print("Disputando a bola")
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9
             ball_position = inspector.get_ball().position
 
             # try the auto complete for reader.make_order_... there are other options
@@ -33,7 +41,10 @@ class MyBot(lugo4py.Bot, ABC):
 
     def on_defending(self, inspector: lugo4py.GameSnapshotInspector) -> List[lugo4py.Order]:
         try:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9
             ball_position = inspector.get_ball().position
 
             move_order = inspector.make_order_move_max_speed(ball_position)
@@ -47,6 +58,7 @@ class MyBot(lugo4py.Bot, ABC):
 
     def on_holding(self, inspector: lugo4py.GameSnapshotInspector) -> List[lugo4py.Order]:
         try:
+<<<<<<< HEAD
 
             # "point" is an X and Y raw coordinate referenced by the field, so the side of the field matters!
             # "region" is a mapped area of the field create by your mapper! so the side of the field DO NOT matter!
@@ -125,6 +137,66 @@ class MyBot(lugo4py.Bot, ABC):
                                 pass_order, move_order = self.make_random_front_pass(order_list, inspector)
                                 order_list.append(move_order)
                                 order_list.append(pass_order)
+=======
+            order_list = []
+            # "point" is an X and Y raw coordinate referenced by the field, so the side of the field matters!
+            # "region" is a mapped area of the field create by your mapper! so the side of the field DO NOT matter!
+            opponent_goal_point = self.mapper.get_attack_goal()
+            goal_region = self.mapper.get_region_from_point(opponent_goal_point.get_center())
+            my_region = self.mapper.get_region_from_point(inspector.get_me().position)
+            me = inspector.get_me().position
+            
+            #se tiver oponente perto ele deve passar a bola para alguem do mesmo time
+            closest_oponnentdis, closest_oponnent  = get_closestenemy_dist(inspector, my_region)
+
+            
+
+            if self.is_near(my_region, goal_region):
+                #goleiro
+                goalkeeper = inspector.get_opponent_players()[0]
+                print(goalkeeper.position)
+                if (goalkeeper.position.y < 5000):
+                    target = Point(20000, 6200)
+                    kick_order = inspector.make_order_kick_max_speed(target)
+                elif (goalkeeper.position.y > 5000):
+                    target = Point(20000, 3800)
+                    kick_order = inspector.make_order_kick_max_speed(target)
+                else:
+                    target = Point(20000, 6200)
+                    kick_order = inspector.make_order_kick_max_speed(target)
+    
+                order_list.append(kick_order)
+
+            else:
+                if (closest_oponnentdis < 2500000):
+                    closest_allypos = get_closestally_position(inspector, my_region)
+                    first_ally_position = list(closest_allypos.values())[0][0].position
+                    
+
+                    #percorrer os 3 aliados mais proximos e passar para algum deles que estiver mais a frente
+                    pass_order = None
+                    for ally_list in closest_allypos.values():
+                        counter = 0
+                        for ally in ally_list:
+                            counter += 1
+                            if ally.position.x > me.x and getDistance(me.x, me.y, ally.position.x, ally.position.y) > 300000:
+                                pass_order = inspector.make_order_kick(first_ally_position,350)
+                                break
+                            if counter == 3:
+                                break
+                    
+                    if (pass_order is None) and getDistance(me.x, me.y, ally.position.x, ally.position.y) > 300000:
+                        #passa para o primeiro jogador no caso de nao ter definido um jogador que recebera a bo
+                        print("Passando para o jogador mais proximo")
+                        first_ally_position = list(closest_allypos.values())[0][0].position
+                        pass_order = inspector.make_order_kick(first_ally_position,250)
+
+                    order_list.append(pass_order)
+            
+            move_order = inspector.make_order_move_max_speed(self.mapper.get_attack_goal().get_center())
+            order_list.append(move_order)
+
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9
             return order_list
 
         except Exception as e:
@@ -171,6 +243,7 @@ class MyBot(lugo4py.Bot, ABC):
         print('getting ready')
 
     def is_near(self, region_origin: lugo4py.mapper.Region, dest_origin: lugo4py.mapper.Region) -> bool:
+<<<<<<< HEAD
         max_distance = 2
         return abs(region_origin.get_row() - dest_origin.get_row()) <= max_distance and abs(
             region_origin.get_col() - dest_origin.get_col()) <= max_distance
@@ -324,3 +397,8 @@ class MyBot(lugo4py.Bot, ABC):
             return 190
         else:
             return 400
+=======
+        max_distance = 1
+        return abs(region_origin.get_row() - dest_origin.get_row()) <= max_distance and abs(
+            region_origin.get_col() - dest_origin.get_col()) <= max_distance
+>>>>>>> 23d7abe93d3945d1133eb658b5d31d3e09b87ac9
